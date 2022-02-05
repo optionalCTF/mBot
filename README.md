@@ -1,5 +1,7 @@
 [![License](https://img.shields.io/badge/license-MIT-_red.svg)](https://opensource.org/licenses/MIT) [![Twitter Follow](https://img.shields.io/twitter/follow/un4gi_io?label=%40un4gi_io&style=social)](https://twitter.com/un4gi_io)
 
+<img src="img/mBot.png">
+
 # mBot (A Go-Based Synack Mission Bot)
 
 This mission bot contains functionality for onboarding, claiming missions, Discord notifications, and auto-relogin.
