@@ -83,3 +83,48 @@ type MissionData []struct {
 	Version      int      `json:"version"`
 	Unauthorized string   `json:"unauthorizedAssignees"`
 }
+
+type MissionDataV2 []struct {
+	ID                   string `json:"id"`
+	Title                string `json:"title"`
+	Description          string `json:"description"`
+	TaskTemplateUid      string `json:"taskTemplateUid"`
+	CampaignUid          string `json:"campaignUid"`
+	CampaignName         string `json:"campaignName"`
+	ListingUid           string `json:"listingUid"`
+	ListingCodename      string `json:"listingCodename"`
+	OrganizationUid      string `json:"organizationUid"`
+	OrganizationCodename string `json:"organizationCodename"`
+	Status               string `json:"status"`
+	HasBeenViewed        bool   `json:"hasBeenViewed"`
+	Payout               struct {
+		Amount   int    `json:"amount"`
+		Currency string `json:"currency"`
+	} `json:"payout"`
+	Credits                 int      `json:"credits"`
+	AssetType               []string `json:"assetTypes"`
+	SV                      []string `json:"sv"`
+	CWE                     []string `json:"cwe"`
+	TaskType                string   `json:"taskType"`
+	BatchID                 string   `json:"batchId"`
+	DefinitionID            string   `json:"definitionId"`
+	TaskGroup               string   `json:"taskGroup"`
+	Scope                   string   `json:"scope"`
+	Response                string   `json:"response"`
+	StructuredResponse      string   `json:"structuredResponse"`
+	ResponseType            string   `json:"responseType"`
+	Assignee                string   `json:"assignee"`
+	Reviewer                string   `json:"reviewer"`
+	Position                int      `json:"position"`
+	CreatedOn               string   `json:"createdOn"`
+	CreatedBy               string   `json:"createdBy"`
+	ModifiedOn              string   `json:"modifiedOn"`
+	ModifiedBy              string   `json:"modifiedBy"`
+	MaxCompletionTimeInSecs int      `json:"maxCompletionTimeInSecs"`
+	PausedDurationInSecs    int      `json:"pausedDurationInSecs"`
+	Version                 int      `json:"version"`
+	ValidResponses          struct {
+		Label string `json:"label"`
+		Value string `json:"value"`
+	} `json:"validResponses"`
+}
