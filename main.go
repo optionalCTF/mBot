@@ -14,7 +14,7 @@ import (
 
 func main() {
 	token := flag.String("t", "", "Authorization: Bearer token")
-	delay := flag.Uint("d", 1, "Time (in seconds) between requests")
+	delay := flag.Uint("d", 60, "Time (in seconds) between requests")
 	//edit := flag.Bool("m", false, "Edit mission with test")
 
 	flag.Parse()
