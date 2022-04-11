@@ -16,8 +16,6 @@ var Token = ""
 var Urls = []string{
 	// urls[0] = all unregistered targets
 	"https://platform.synack.com/api/targets?filter%5Bprimary%5D=unregistered&filter%5Bsecondary%5D=all&filter%5Bcategory%5D=all&filter%5Bindustry%5D=all&sorting%5Bfield%5D=dateUpdated&sorting%5Bdirection%5D=desc",
-	// urls[1] = available missions sorted by price
-	// "https://platform.synack.com/api/tasks/v1/tasks?sortBy=price-sort-desc&withHasBeenViewedInfo=true&status=PUBLISHED&page=0&pageSize=20",
 	// urls[1] = available missions sorted by price (v2)
 	"https://platform.synack.com/api/tasks/v2/tasks?perPage=20&viewed=true&page=1&status=PUBLISHED&sort=AMOUNT&sortDir=desc",
 	// urls[2] = QR window
@@ -28,6 +26,8 @@ var Urls = []string{
 	"https://platform.synack.com/api/tasks/v2/tasks/",
 	// urls[5] = authenticate URL
 	"https://login.synack.com/api/authenticate",
+	// urls[6] = claimed Amount
+	"https://platform.synack.com/api/tasks/v2/researcher/claimed_amount",
 }
 
 func SetHeaders(req *http.Request) {
@@ -48,15 +48,15 @@ func DoGetRequest(target string) (int, io.ReadCloser) {
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	req, err := http.NewRequest("GET", target, nil)
-	if err != nil {
-		log.Println(err)
+	if err != nil && err != context.Canceled && err != io.EOF {
+		log.Printf(env.ErrorColor, err)
 		return 0, nil
 	}
 	SetHeaders(req)
 
 	resp, err := http.DefaultClient.Do(req.WithContext(ctx))
-	if err != nil {
-		log.Println(err)
+	if err != nil && err != context.Canceled && err != io.EOF {
+		log.Printf(env.ErrorColor, err)
 		return 0, nil
 	}
 	return resp.StatusCode, resp.Body
@@ -69,15 +69,15 @@ func DoPostRequest(target string, jsonStr []byte) (int, io.ReadCloser) {
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	req, err := http.NewRequest("POST", target, bytes.NewBuffer(jsonStr))
-	if err != nil {
-		log.Println(err)
+	if err != nil && err != context.Canceled && err != io.EOF {
+		log.Printf(env.ErrorColor, err)
 	}
 
 	SetHeaders(req)
 
 	resp, err := http.DefaultClient.Do(req.WithContext(ctx))
-	if err != nil {
-		log.Println(err)
+	if err != nil && err != context.Canceled && err != io.EOF {
+		log.Printf(env.ErrorColor, err)
 	}
 	return resp.StatusCode, resp.Body
 }
@@ -104,15 +104,15 @@ func DoLoginGetRequest(target string) (int, io.ReadCloser, http.Header) {
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	req, err := http.NewRequest("GET", target, nil)
-	if err != nil {
-		log.Println(err)
+	if err != nil && err != context.Canceled && err != io.EOF {
+		log.Printf(env.ErrorColor, err)
 		return 0, nil, nil
 	}
 	SetHeaders(req)
 
 	resp, err := http.DefaultClient.Do(req.WithContext(ctx))
-	if err != nil {
-		log.Println(err)
+	if err != nil && err != context.Canceled && err != io.EOF {
+		log.Printf(env.ErrorColor, err)
 		return 0, nil, nil
 	}
 	return resp.StatusCode, resp.Body, resp.Header
@@ -125,15 +125,15 @@ func DoLoginPostRequest(target string, jsonStr []byte, token string, cookie stri
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	req, err := http.NewRequest("POST", target, bytes.NewBuffer(jsonStr))
-	if err != nil {
-		log.Println(err)
+	if err != nil && err != context.Canceled && err != io.EOF {
+		log.Printf(env.ErrorColor, err)
 	}
 
 	SetLoginHeaders(req, token, cookie)
 
 	resp, err := http.DefaultClient.Do(req.WithContext(ctx))
-	if err != nil {
-		log.Println(err)
+	if err != nil && err != context.Canceled && err != io.EOF {
+		log.Printf(env.ErrorColor, err)
 	}
 	return resp.StatusCode, resp.Body
 }
@@ -160,14 +160,14 @@ func DoGrantTokenRequest(target string) (int, io.ReadCloser) {
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	req, err := http.NewRequest("GET", target, nil)
-	if err != nil {
-		log.Println(err)
+	if err != nil && err != context.Canceled && err != io.EOF {
+		log.Printf(env.ErrorColor, err)
 		return 0, nil
 	}
 	SetGrantTokenHeaders(req)
 
 	resp, err := http.DefaultClient.Do(req.WithContext(ctx))
-	if err != nil {
+	if err != nil && err != context.Canceled && err != io.EOF {
 		if err == context.DeadlineExceeded {
 			log.Printf(env.ErrorColor, err)
 		} else {
