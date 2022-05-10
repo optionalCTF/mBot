@@ -4,11 +4,15 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
+	"encoding/json"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
 
+	"github.com/un4gi/mBot/data"
 	"github.com/un4gi/mBot/env"
 )
 
@@ -28,6 +32,8 @@ var Urls = []string{
 	"https://login.synack.com/api/authenticate",
 	// urls[6] = claimed Amount
 	"https://platform.synack.com/api/tasks/v2/researcher/claimed_amount",
+	// urls[7] = connect to target
+	"https://platform.synack.com/api/launchpoint",
 }
 
 func SetHeaders(req *http.Request) {
@@ -176,4 +182,82 @@ func DoGrantTokenRequest(target string) (int, io.ReadCloser) {
 		}
 	}
 	return resp.StatusCode, resp.Body
+}
+
+func ConnectToTarget(listing string) (int, io.ReadCloser) {
+	type Connection struct {
+		ListingID string `json:"listing_id"`
+	}
+
+	connection := Connection{
+		ListingID: listing,
+	}
+
+	json, err := json.Marshal(connection)
+	if err != nil {
+		log.Println(err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 180000*time.Millisecond)
+	defer cancel()
+
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+
+	req, err := http.NewRequest(http.MethodPut, Urls[7], bytes.NewBuffer(json))
+	if err != nil && err != context.Canceled && err != io.EOF {
+		log.Printf(env.ErrorColor, err)
+	}
+
+	SetHeaders(req)
+
+	resp, err := http.DefaultClient.Do(req.WithContext(ctx))
+	if err != nil && err != context.Canceled && err != io.EOF {
+		log.Printf(env.ErrorColor, err)
+	}
+	return resp.StatusCode, resp.Body
+}
+
+func VerifyOptimusDownload() bool {
+	var connection data.ConnectionStatus
+
+	ctx, cancel := context.WithTimeout(context.Background(), 180000*time.Millisecond)
+	defer cancel()
+
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+
+	req, err := http.NewRequest("GET", Urls[7], nil)
+	if err != nil && err != context.Canceled && err != io.EOF {
+		log.Printf(env.ErrorColor, err)
+		return false
+	}
+	SetHeaders(req)
+
+	resp, err := http.DefaultClient.Do(req.WithContext(ctx))
+	if err != nil && err != context.Canceled && err != io.EOF {
+		log.Printf(env.ErrorColor, err)
+		return false
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+
+	fmt.Println(string(body))
+	if err := json.Unmarshal(body, &connection); err != nil {
+		log.Println("Can not unmarshal JSON")
+	}
+
+	if connection.Slug == "scz3994tx0" {
+		return true
+	} else if connection.Slug == "" {
+		log.Printf(env.InfoColor, "No target was connected. Connecting to OPTIMUSDOWNLOAD...")
+		canConnect, _ := ConnectToTarget("scz3994tx0")
+		if canConnect == 200 {
+			log.Printf(env.SuccessColor, "Connected to OPTIMUSDOWNLOAD!")
+			return true
+		} else {
+			return false
+		}
+	} else {
+		return false
+	}
 }
