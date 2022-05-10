@@ -15,7 +15,7 @@ func ConnectDiscord(m string) {
 		fmt.Println("Error starting new bot session,", err)
 	}
 
-	user, _ := d.User("@me")
+	user, err := d.User("@me")
 	if err != nil {
 		fmt.Println(err.Error())
 	}
