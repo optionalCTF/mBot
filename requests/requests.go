@@ -37,7 +37,7 @@ var Urls = []string{
 }
 
 func SetHeaders(req *http.Request) {
-	req.Header.Set("User-Agent", "mBot (https://github.com/un4gi/mBot)")
+	req.Header.Set("User-Agent", "not a bot (definitely not made by github.com/un4gi)")
 	req.Header.Set("Authorization", "Bearer "+Token)
 	req.Header.Set("Sec-Fetch-Site", "same-origin")
 	req.Header.Set("Sec-Fetch-Mode", "cors")
