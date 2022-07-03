@@ -123,7 +123,7 @@ type MissionDataV2 []struct {
 	MaxCompletionTimeInSecs int      `json:"maxCompletionTimeInSecs"`
 	PausedDurationInSecs    int      `json:"pausedDurationInSecs"`
 	Version                 int      `json:"version"`
-	ValidResponses          struct {
+	ValidResponses          []struct {
 		Label string `json:"label"`
 		Value string `json:"value"`
 	} `json:"validResponses"`
