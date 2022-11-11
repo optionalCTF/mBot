@@ -18,6 +18,7 @@ import (
 func main() {
 	token := flag.String("t", "", "Authorization: Bearer token")
 	delay := flag.Uint("d", 60, "Time (in seconds) between requests")
+	disc := flag.Bool("n", false, "Connect to Discord?")
 
 	flag.Parse()
 
@@ -29,7 +30,10 @@ func main() {
 		requests.Token = *token
 	}
 
-	discord.ConnectDiscord("Discord Connected")
+	if *disc {
+		discord.ConnectDiscord("[~] Mission Bot Connection Established")
+	}
+
 	config.Delay = *delay
 	targets.CheckTargets(requests.Urls[0])
 	mission.CheckClaimed()
