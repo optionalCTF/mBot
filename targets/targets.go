@@ -29,18 +29,15 @@ func CheckTargets(target string) {
 		}
 
 		var newTargets data.TargetData
-		err = json.Unmarshal(bodyBytes, &newTargets)
+		json.Unmarshal(bodyBytes, &newTargets)
 		bodyString := string(bodyBytes)
 
 		if len(bodyString) > 3 { // Check to see if there is a JSON response
 			for i := 0; i < len(newTargets); i++ { // Iterate over the number of unregistered targets
-				if newTargets[i].Category.ID >= 3 { // Check to see if new target is a web/host target
-				} else {
-					if !newTargets[i].Registered {
-						log.Printf(env.InfoColor, "Onboarding to "+newTargets[i].Codename+" - "+newTargets[i].Slug)
-						OnboardTarget("https://platform.synack.com/api/targets/" + newTargets[i].Slug + "/signup")
-						discord.ConnectDiscord("Onboarded to " + newTargets[i].Codename + "! Go find some vulns!!")
-					}
+				if !newTargets[i].Registered {
+					log.Printf(env.InfoColor, "Onboarding to "+newTargets[i].Codename+" - "+newTargets[i].Slug)
+					OnboardTarget("https://platform.synack.com/api/targets/" + newTargets[i].Slug + "/signup")
+					discord.ConnectDiscord("Onboarded to " + newTargets[i].Codename + "! Go find some vulns!!")
 				}
 			}
 		}

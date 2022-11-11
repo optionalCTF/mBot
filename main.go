@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/un4gi/mBot/config"
+	"github.com/un4gi/mBot/discord"
 	"github.com/un4gi/mBot/env"
 	"github.com/un4gi/mBot/mission"
 	"github.com/un4gi/mBot/requests"
@@ -20,13 +21,15 @@ func main() {
 
 	flag.Parse()
 
-	if len(*token) == 0 {
+	// Changed expected result for automated run
+	if *token != "config" {
 		fmt.Printf(env.DebugColor, "You need to supply an Authorization: Bearer token.")
 		os.Exit(0)
 	} else {
 		requests.Token = *token
 	}
 
+	discord.ConnectDiscord("Discord Connected")
 	config.Delay = *delay
 	targets.CheckTargets(requests.Urls[0])
 	mission.CheckClaimed()
